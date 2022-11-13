@@ -4,9 +4,7 @@ const { CRYPTODEVS_NFT_CONTRACT_ADDRESS } = require("../constants");
 
 async function main() {
   // Deploy the FakeNFTMarketplace contract first
-  const FakeNFTMarketplace = await ethers.getContractFactory(
-    "FakeNFTMarketplace"
-  );
+  const FakeNFTMarketplace = await ethers.getContractFactory("FakeNFTMarketplace");
   const fakeNftMarketplace = await FakeNFTMarketplace.deploy();
   await fakeNftMarketplace.deployed();
 

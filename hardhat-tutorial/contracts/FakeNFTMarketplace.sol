@@ -1,53 +1,33 @@
 
-  pragma solidity ^0.8.0;
+pragma solidity ^0.8.0;
 
-  contract BuyMeACoffee{
 
-    event NewMemo(
-      address indexed from,
-      uint256 timestamp,
-      string name,
-      string message
-    );
+contract FakeNFTMarketplace {
+    /// @dev Maintain a mapping of Fake TokenID to Owner addresses
+    mapping(uint256 => address) public tokens;
+    /// @dev Set the purchase price for each Fake NFT
+    uint256 nftPrice = 0.1 ether;
 
-    struct Memo{
-      address from;
-      uint256 timestamp;
-      string name;
-      string message;
+    /// @dev purchase() accepts ETH and marks the owner of the given tokenId as the caller address
+    /// @param _tokenId - the fake NFT token Id to purchase
+    function purchase(uint256 _tokenId) external payable {
+        require(msg.value == nftPrice, "This NFT costs 0.1 ether");
+        tokens[_tokenId] = msg.sender;
     }
 
-    address payable owner;
-    Memo[] memos;
-
-    constructor(){
-      owner = payable(msg.sender);
+    /// @dev getPrice() returns the price of one NFT
+    function getPrice() external view returns (uint256) {
+        return nftPrice;
     }
 
-    function getMemos() public view returns(Memo[] memory){
-      return memos;
+    /// @dev available() checks whether the given tokenId has already been sold or not
+    /// @param _tokenId - the tokenId to check for
+    function available(uint256 _tokenId) external view returns (bool) {
+        // address(0) = 0x0000000000000000000000000000000000000000
+        // This is the default value for addresses in Solidity
+        if (tokens[_tokenId] == address(0)) {
+            return true;
+        }
+        return false;
     }
-
-    function buyCoffee(string memory _name, string memory _message) public payable {
-      require(msg.value > 0, "No free coffee!!!");
-
-      memos.push(Memo(
-        msg.sender,
-        block.timestamp,
-        _name,
-        _message
-      ));
-
-      emit NewMemo(
-        msg.sender,
-        block.timestamp,
-        _name,
-        _message
-      );
-    }
-
-    function withdrawTips() public {
-      require(owner.send(address(this).balance));
-    }
-
-  }
+}

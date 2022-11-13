@@ -56,12 +56,12 @@ contract CryptoDevsDAO is Ownable {
   }
 
   modifier nftHolderOnly(){
-    require(cryptoDevsNFT.balanceOf(msg.sender) > 0, "Not a DAO memebr");
+    require(cryptoDevsNFT.balanceOf(msg.sender) > 0, "NOT_A_DAO_MEMEBR");
     _;
   }
 
   function createProposal(uint256 _nftTokenId) external nftHolderOnly returns (uint256){
-    require(nftMarketplace.available(_nftTokenId), "NFT Not for Sale");
+    require(nftMarketplace.available(_nftTokenId), "NFTONOT_FOR_SALE");
     Proposal storage proposal = proposals[numProposals];
     proposal.nftTokenId = _nftTokenId;
 
@@ -74,7 +74,7 @@ contract CryptoDevsDAO is Ownable {
   }
 
   modifier activeProposalOnly(uint256 proposalIndex){
-    require(proposals[proposalIndex].deadline > block.timestamp, "Deadline Exceeded");
+    require(proposals[proposalIndex].deadline > block.timestamp, "DEADLINE_EXCEEDED");
     _;
   }
 
@@ -95,7 +95,7 @@ contract CryptoDevsDAO is Ownable {
           numVotes++;
           proposal.voters[tokenId] = true;
         }
-        require(numVotes > 0, "Already Voted");
+        require(numVotes > 0, "ALREADT_VOTED");
 
         if (vote == Vote.YAY){
           proposal.yayVotes += numVotes;
@@ -123,7 +123,7 @@ contract CryptoDevsDAO is Ownable {
 
       if (proposal.yayVotes > proposal.nayVotes){
         uint256 nftPrice = nftMarketplace.getPrice();
-        require(address(this).balance >= nftPrice,"not enough funds");
+        require(address(this).balance >= nftPrice,"NOT_ENOUGH_FUNDS");
         nftMarketplace.purchase{value: nftPrice }(proposal.nftTokenId);
 
       }
